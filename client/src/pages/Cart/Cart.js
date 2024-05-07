@@ -19,7 +19,7 @@ function CartItem({id, name, quantity, price, deleteSelf, updateCartInfo}) {
         console.log(newQuantity)
         if (newQuantity <= 0) {
             // Still need to call this so backend deletes it.
-            deleteSelf()
+            // deleteSelf()
         } else {
             axios.post('http://localhost:9000/cart/adjustQuantity', { itemID: id, newQuantity: newQuantity })
                 .then(res => {
@@ -31,7 +31,7 @@ function CartItem({id, name, quantity, price, deleteSelf, updateCartInfo}) {
                     }
                 })
                 .catch(err => console.log(err));
-            
+
         }
       }
     }
@@ -41,6 +41,7 @@ function CartItem({id, name, quantity, price, deleteSelf, updateCartInfo}) {
             <div className="item-fields">
                 <div className="prod-name">{name}</div>
                 x<input className="quantity" type="number" value={itemCount} onChange={updateQuantity}></input>
+                <button onClick={deleteSelf}>Remove</button>
                 <div className="price">${price}</div>
             </div>
             <div className="cart-fake-hr"></div>
@@ -152,7 +153,7 @@ function CartPage({}) {
         style: 'currency',
         currency: 'USD'
     });
- 
+
     return (
         <div id="cart-page">
             <NavigationBar/>
@@ -164,7 +165,7 @@ function CartPage({}) {
                     <div className="cart-fake-hr"></div>
                     <div id="items">
                         {cartItems.map((item, idx) => (
-                            <CartItem key={idx} id={item.itemID} name={item.itemName} price={item.price} quantity={item.quantity} deleteSelf={() => deleteItem(item.itemID)} 
+                            <CartItem key={idx} id={item.itemID} name={item.itemName} price={item.price} quantity={item.quantity} deleteSelf={() => deleteItem(item.itemID)}
                             updateCartInfo={(moneyStuff, id, newQuantity) => updateQuantity(moneyStuff, id, newQuantity)}/>
                         ))}
                     </div>

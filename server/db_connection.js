@@ -8,7 +8,7 @@ const connection = new Pool({
   port: process.env.DATABASE_PORT,
   database: process.env.DATABASE_NAME
 });
-
+console.log(connection);
 // Prints message to server console when database is queried
 connection.on('connect', (client) => {
     console.log("PostgreSQL accessed.");
