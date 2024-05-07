@@ -1,14 +1,15 @@
 const db = require("../db_connection.js").db_connection;
+const bcrypt = require('bcrypt');
 
 // Takes a username and password and confirms they match/exist
 // callback takes parameters: (error, bool success, string statusMessage, bool isAdmin)
 function authenticateUser(username, password, callback) {
     let sql = "SELECT password, is_admin FROM Customer WHERE user_name = $1";
     db.query(sql, [username])
-        .then(result => {
+        .then(async result => {
             if (result.rows.length > 0) {
                 // check pass
-                if (password === result.rows[0].password) {
+                if (await comparePassword(password, result.rows[0].password)) {
                     // username and password are correct
                     callback(null, true, "Successfully authenticated as " + username + ".", result.rows[0].is_admin);
                 } else {
@@ -80,11 +81,12 @@ function createAccount(username, password, callback) {
     // First check if an account is aleady created with given username
     let sql = "SELECT user_name FROM Customer WHERE user_name = $1";
     db.query(sql, [username])
-        .then(result => {
+        .then(async result => {
             if (result.rows.length <= 0) {
                 // create account
                 let sql2 = "INSERT INTO Customer (user_name, password, is_admin) VALUES ($1, $2, false)";
-                db.query(sql2, [username, password])
+
+                db.query(sql2, [username, await hashPassword(password)])
                     .then(result2 => {
                         callback("Account " + username + " successfully created. You may now log in.");
                     });
@@ -97,6 +99,28 @@ function createAccount(username, password, callback) {
             console.log(err);
             callback(err);
         });
+}
+
+async function hashPassword(password) {
+  try {
+    
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      return hashedPassword;
+  } catch (error) {
+      throw new Error('Error hashing password');
+  }
+}
+
+async function comparePassword(plainPassword, hashedPassword) {
+  try {
+      const match = await bcrypt.compare(plainPassword, hashedPassword);
+      // console.log(match)
+      return match
+      // callback(match)
+  } catch (error) {
+      throw new Error('Error comparing passwords');
+  }
 }
 
 module.exports = {authenticateUser, getUserInfo, login, logout, createAccount};

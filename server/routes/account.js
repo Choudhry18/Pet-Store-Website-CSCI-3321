@@ -39,9 +39,9 @@ expects req.body to have the fields {
 }
 */
 router.post("/create_account", function (req, res) {
-    accountModel.createAccount(req.body.username, req.body.password, (result) => {
-        return res.json(result);
-    });
+  accountModel.createAccount(req.body.username, req.body.password, (result) => {
+    return res.json(result);
+  });
 });
 
 // Receiving request to log out the user

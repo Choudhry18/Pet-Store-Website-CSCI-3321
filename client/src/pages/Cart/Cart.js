@@ -12,9 +12,13 @@ function CartItem({id, name, quantity, price, deleteSelf, updateCartInfo}) {
     useEffect(() => {setItemCount(quantity)}, [quantity]);
 
     const updateQuantity = (e) => {
+      if (e.target.value === ""){
+        setItemCount("");
+      } else {
         const newQuantity = parseInt(e.target.value);
-        if (newQuantity === 0) {
-            // Still need to call this so backend deletes it. Probably hackable lol
+        console.log(newQuantity)
+        if (newQuantity <= 0) {
+            // Still need to call this so backend deletes it.
             deleteSelf()
         } else {
             axios.post('http://localhost:9000/cart/adjustQuantity', { itemID: id, newQuantity: newQuantity })
@@ -29,6 +33,7 @@ function CartItem({id, name, quantity, price, deleteSelf, updateCartInfo}) {
                 .catch(err => console.log(err));
             
         }
+      }
     }
 
     return (
